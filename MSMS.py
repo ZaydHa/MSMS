@@ -71,14 +71,14 @@ def find_teacher(term):
     results = [ teacher for teacher in teacher_db if term_lower in teacher.name.lower() or term_lower in teacher.speciality.lower()]
     return results
 
-def front_desk_reigster(name, instrument):
+def front_desk_register(name, instrument):
     student = add_student(name)
     enrolled = enroll_student_in_instrument(student.id, instrument)
     if enrolled:
         print(f"student '{student.name}' (ID:{student.id}) registered and enrolled in '{instrument}'.")
     else: 
         print(f"student '{student.name}' (ID: {student.id}) registered, but is not enrolled in {instrument} failed.")
-        return student
+    return student
     
 def front_desk_enrol(student_id, instrument):
     student = find_student_by_id(student_id)
@@ -93,42 +93,62 @@ def front_desk_enrol(student_id, instrument):
         print(f"Student '{student.name}' (ID: {student.id}) is already enrolled in '{instrument}'.")
     return False
 
-def front_desk_find_student(term):
-    student_are_found = find_student(term)
-    teachers_are_found = find_teacher(term)
+def front_desk_lookup(term):
+    students_found = find_student(term)
+    teachers_found = find_teacher(term)
 
-    if student_are_found:
+    if students_found:
         print("Students found:")
-        for student in student_are_found:
+        for student in students_found:
             instruments = ', '.join(student.enrolled_in) if student.enrolled_in else 'None'
             print(f"ID: {student.id}, Name: {student.name}, Enrolled in: {instruments}")
     else:
         print("No students found.")
 
-def test_all():
-    print("Adding some teachers...")
-    add_teacher("Alice", "Piano")
-    add_teacher("Bob", "Guitar")
-    print_all_teachers()
+    if teachers_found:
+        print("Teachers found:")
+        for teacher in teachers_found:
+            print(f"ID: {teacher.id}, Name: {teacher.name}, Speciality: {teacher.speciality}")
+    else:
+        print("No teachers found.")
 
-    print("\nRegistering new students...")
-    front_desk_register("Charlie", "Violin")
-    front_desk_register("Diana", "Flute")
-    print_all_students()
 
-    print("\nEnrolling existing student in new instrument...")
-    front_desk_enrol(1, "Piano")  # Enroll Charlie (ID=1) in Piano
-    front_desk_enrol(2, "Guitar") # Enroll Diana (ID=2) in Guitar
-    print_all_students()
+def main():
+    print("Welcome to the Music School Management System!")
 
-    print("\nTrying to enroll a student in an instrument they're already enrolled in...")
-    front_desk_enrol(1, "Violin")  # Should fail because Charlie already enrolled in Violin
+    while True:
+        print("\n--- Main Menu ---")
+        print("1. Add a new student and assign an instrument")
+        print("2. Add an instrument to an existing student")
+        print("3. Search for a student or teacher by name")
+        print("4. Exit the system")
 
-    print("\nLooking up students with term 'char' (case-insensitive)...")
-    front_desk_lookup("char")
+        choice = input("Select an option (1-4): ").strip()
 
-    print("\nLooking up teachers with term 'guitar' (case-insensitive)...")
-    front_desk_lookup("guitar")
+        if choice == '1':
+            name = input("Student's full name: ").strip()
+            instrument = input("Instrument to enrol them in: ").strip()
+            front_desk_register(name, instrument)
 
-    print("\nLooking up term with no results...")
-    front_desk_lookup("xyz")
+        elif choice == '2':
+            try:
+                student_id = int(input("Enter the student's ID: ").strip())
+            except ValueError:
+                print("That wasn't a valid number. Please try again.")
+                continue
+            instrument = input("Instrument to add: ").strip()
+            front_desk_enrol(student_id, instrument)
+
+        elif choice == '3':
+            term = input("Type a name or part of a name to search: ").strip()
+            front_desk_lookup(term)
+
+        elif choice == '4':
+            print("Thank you for using the Music School System. Goodbye! 👋")
+            break
+
+        else:
+            print("Invalid option. Please pick a number from 1 to 4.")
+
+if __name__ == "__main__":
+    main()
