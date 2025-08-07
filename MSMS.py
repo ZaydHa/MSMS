@@ -16,10 +16,11 @@ teacher_db = [] # Global data stores
 next_student_id = 1 # Global data stores
 next_teacher_id = 1 # Global data stores 
 
-
-
-git init
-git add MSMS.py
-git commit -m "Checkpoint A: Added Student and Teacher classes"
+def add_student(name):
+    global next_student_id
+    new_student = student(next_student_id, name) # Create new student object
+    student_db.append(student) # Add to student database
+    next_student_id += 1 # Increment student ID for next student
+    return student
 
 
