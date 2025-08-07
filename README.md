@@ -9,10 +9,10 @@ This project is the first stage (PST1) of the Music School Management System for
 
 What each part does
 
-- Student and Teacher Classes:**  
+- Student and Teacher Classes:
   Define the data structure for students (ID, name, enrolled instruments) and teachers (ID, name, specialty).
 
-- In-Memory Databases:**  
+- In-Memory Databases:
   Use global lists 'student_db' and 'teacher_db' to store all records temporarily during program execution.
 
 - ID Counters:
@@ -35,7 +35,7 @@ What each part does
 
 ---
 
-## How to run and test
+ How to run and test
 
 1. Make sure you have Python 3 installed.  
    Check with: `python3 --version`
