@@ -61,9 +61,12 @@ def enroll_student_in_instrument(student_id, instrument_name):
     student.enrolled_in.append(instrument_name)
     return True
 
-if __name__ == "__main__":
-    add_student("Alice")
-    add_teacher("Mr. Smith", "Piano")
-    enroll_student_in_instrument(1, "Piano")
-    print_all_students()
-    print_all_teachers()
+def find_student(term):
+    term_lower = term.lower()
+    results = [ student for student in student_db if term_lower in student.name.lower()]
+    return results
+
+def find_teacher(term):
+    term_lower = term.lower()
+    results = [ teacher for teacher in teacher_db if term_lower in teacher.name.lower() or term_lower in teacher.speciality.lower()]
+    return results
