@@ -11,7 +11,6 @@ def load_data(path=DATA_FILE):
     try:
         with open(path, 'r') as f:
             loaded = json.load(f)
-            # Validate loaded data
             if not loaded.get("students") or not loaded.get("teachers"):
                 raise ValueError("Data incomplete")
             app_data = loaded
@@ -112,6 +111,30 @@ def print_student_card(student_id):
     else:
         print(f"Error: Could not print card, student {student_id} not found.")
 
+# --- New Features ---
+def search_students(query):
+    """Search for students by name (case-insensitive partial match)."""
+    query_lower = query.lower()
+    matches = [s for s in app_data['students'] if query_lower in s['name'].lower()]
+    if matches:
+        print("\nSearch Results:")
+        for s in matches:
+            print(f"ID: {s['id']}, Name: {s['name']}, Enrolled In: {', '.join(s.get('enrolled_in', []))}")
+    else:
+        print("No students found with that name.")
+
+def enroll_student(student_id, courses):
+    """Enroll a student in new courses without overwriting existing enrollments."""
+    for student in app_data['students']:
+        if student['id'] == student_id:
+            current_courses = set(student.get('enrolled_in', []))
+            new_courses = {c.strip() for c in courses if c.strip()}
+            updated_courses = list(current_courses.union(new_courses))
+            student['enrolled_in'] = updated_courses
+            print(f"Student {student_id} enrolled in: {', '.join(new_courses)}")
+            return
+    print(f"Error: Student with ID {student_id} not found.")
+
 # --- Main Application Loop ---
 def main():
     load_data()  # Load all data from file at startup
@@ -125,6 +148,8 @@ def main():
         print("5. Remove Student")
         print("6. Check-in Student")
         print("7. Print Student Card")
+        print("8. Search Students")
+        print("9. Enroll Student in New Courses")
         print("q. Quit and Save")
 
         choice = input("Enter your choice: ").strip()
@@ -189,6 +214,19 @@ def main():
             try:
                 student_id = int(input("Enter student ID: "))
                 print_student_card(student_id)
+            except ValueError:
+                print("Invalid input. Student ID must be a number.")
+
+        elif choice == '8':
+            query = input("Enter student name to search: ").strip()
+            search_students(query)
+
+        elif choice == '9':
+            try:
+                student_id = int(input("Enter student ID: "))
+                courses = input("Enter new courses (comma separated): ").split(",")
+                enroll_student(student_id, courses)
+                made_change = True
             except ValueError:
                 print("Invalid input. Student ID must be a number.")
 
