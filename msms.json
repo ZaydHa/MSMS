@@ -1,0 +1,39 @@
+{
+    "students": [
+        {
+            "id": 1,
+            "name": "Alice Smith",
+            "enrolled_in": [
+                "Piano 101",
+                "Theory 1"
+            ]
+        },
+        {
+            "id": 2,
+            "name": "Bob Johnson",
+            "enrolled_in": [
+                "Guitar Basics"
+            ]
+        }
+    ],
+    "teachers": [
+        {
+            "id": 1,
+            "name": "Mr. Taylor",
+            "speciality": "Piano"
+        },
+        {
+            "id": 2,
+            "name": "Ms. Chen",
+            "speciality": "Guitar"
+        },
+        {
+            "id": 3,
+            "name": "q",
+            "speciality": "q"
+        }
+    ],
+    "attendance": [],
+    "next_student_id": 3,
+    "next_teacher_id": 4
+}
