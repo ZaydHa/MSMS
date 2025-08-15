@@ -1,56 +1,54 @@
 Music School Management System (MSMS) – PST2
 Overview
-This is the PST2 (Persistence Upgrade) stage of the Music School Management System project for FIT1056 – Introduction to Software Engineering. PST2 focuses on solving the “Amnesia & Chaos” problem from PST1 by adding persistent data storage, full CRUD operations, and new receptionist features.
-All data is now stored in a structured JSON file (msms.json), making it permanent across sessions. The code has been refactored into pst2_main.py for better organization.
-Features Implemented in PST2
+This repository contains the PST2 (Persistence Upgrade) stage of the Music School Management System (MSMS), developed as part of FIT1056 – Introduction to Software Engineering, Semester 2. PST2 builds on PST1 by adding permanent data storage, expanded CRUD functionality, and receptionist features. All application data is now stored in a structured JSON file (msms.json), ensuring it is retained between program runs.
+The old MSMS.py script from PST1 has been fully refactored into pst2_main.py, improving readability, maintainability, and modularity.
+Objectives of PST2
+Eliminate "Amnesia" – In PST1, data was stored in memory only, meaning it was lost when the program closed. PST2 introduces file persistence via a JSON file, so all data is saved permanently.
+Improve Data Organization – All information (students, teachers, attendance, ID counters) is stored in a single global dictionary named app_data.
+Introduce Robust CRUD Operations – Add missing "Update" and "Delete" functions and ensure changes are saved immediately.
+Add Receptionist Tools – Ability to check in students and generate printable student cards.
+Extend Functionality – Add Search Students and Enroll in New Courses.
+Features Implemented
 Persistence Engine
-load_data(path): Loads all data from msms.json or creates a default structure if the file does not exist.
-save_data(path): Saves all current application data into a JSON file in a human-readable format.
+load_data(path) loads application data from msms.json. If the file doesn’t exist, creates a default structure:
+{
+"students": [],
+"teachers": [],
+"attendance": [],
+"next_student_id": 1,
+"next_teacher_id": 1
+}
+save_data(path) writes the current state of app_data to msms.json in a human-readable format.
 CRUD Operations
-add_teacher(): Add new teacher records.
-update_teacher(teacher_id, **fields): Update specific teacher details.
-remove_teacher(teacher_id): Delete a teacher by ID.
-add_student(): Add new student records.
-update_student(student_id, **fields): Update student details.
-remove_student(student_id): Delete a student by ID.
+Teachers:
+add_teacher() – Adds a teacher with unique ID, name, and instrument taught.
+update_teacher(teacher_id, **fields) – Updates teacher details.
+remove_teacher(teacher_id) – Deletes a teacher by ID.
+Students:
+add_student() – Adds a student with unique ID, name, and courses.
+update_student(student_id, **fields) – Updates student details.
+remove_student(student_id) – Deletes a student by ID.
 Receptionist Features
-check_in(student_id, course_id, timestamp): Record a student’s attendance.
-print_student_card(student_id): Generate a text file with a student’s details.
-Extra Features
-Search Students – Find students by name or partial match.
-Enroll in New Courses – Assign a student to additional courses.
-Menu options updated to include these features.
+check_in(student_id, course_id, timestamp) – Adds attendance record.
+print_student_card(student_id) – Generates a text file with student details.
+Extra PST2 Features
+search_students(query) – Searches students by name.
+enroll_in_course(student_id, course_name) – Adds a course to a student’s record.
 Project Structure
 MSMS/
-• pst2_main.py – Main application logic and menu
-• msms.json – Persistent data storage file
-• README.md – Project documentation
-• .gitignore – Git ignore rules
+pst2_main.py – Main application logic and menu loop
+msms.json – Persistent JSON data file
+README.md – Documentation
+.gitignore – Git ignore rules
+How the Program Works
+Startup – load_data() runs first, loading msms.json or creating default data.
+Menu – Offers options to manage teachers, students, check-ins, searches, enrollments, and more.
+Persistence – After any data change, save_data() is called immediately.
+Exit – Data is already saved, so closing the program is safe.
 How to Run
-Make sure you have Python 3 installed.
-Clone this repository: git clone https://github.com/<your-username>/MSMS.git then cd MSMS
-Run the application: python pst2_main.py
-Follow the menu prompts to add, update, delete, search, check-in, or print student cards.
-How to Test
-Add a Teacher → Check msms.json for updated teacher list.
-Add a Student → Verify in JSON file.
-Update & Remove → Ensure changes are reflected permanently.
-Check-in → Confirm attendance record appears in msms.json.
-Print Student Card → Check the generated .txt file.
-Search Students → Try partial name matches.
-Enroll in New Course → Confirm course list updates in JSON.
-Design Choices & Assumptions
-JSON was chosen for persistence because it is human-readable, lightweight, and easily handled in Python.
-Global app_data Dictionary holds all students, teachers, attendance records, and ID counters in a single structure.
-Immediate Save After Changes ensures no data is lost if the program closes unexpectedly.
-ID System ensures each student and teacher has a unique identifier.
-Commit History (PST2)
-feat: Added persistence engine (load_data, save_data)
-refactor: Updated CRUD functions for new data structure
-feat: Added receptionist features (check_in, print_student_card)
-feat: Added search & enroll functionality
-chore: Updated main loop for persistence
-Author
-Name: Zayd Hamza
-Student ID: [Your ID here]
-Unit: FIT1056 – Introduction to Software Engineering
+Install Python 3 if not already installed.
+Clone the repository:
+git clone https://github.com/<your-username>/MSMS.git
+cd MSMS
+Run the program:
+python pst2_main.py
