@@ -1,39 +1,49 @@
 {
-    "students": [
-        {
-            "id": 1,
-            "name": "Alice Smith",
-            "enrolled_in": [
-                "Piano 101",
-                "Theory 1"
-            ]
-        },
-        {
-            "id": 2,
-            "name": "Bob Johnson",
-            "enrolled_in": [
-                "Guitar Basics"
-            ]
-        }
-    ],
-    "teachers": [
-        {
-            "id": 1,
-            "name": "Mr. Taylor",
-            "speciality": "Piano"
-        },
-        {
-            "id": 2,
-            "name": "Ms. Chen",
-            "speciality": "Guitar"
-        },
-        {
-            "id": 3,
-            "name": "q",
-            "speciality": "q"
-        }
-    ],
-    "attendance": [],
-    "next_student_id": 3,
-    "next_teacher_id": 4
+  "students": [
+    { "id": 1, "name": "Alice Johnson", "enrolled_course_ids": [101, 103] },
+    { "id": 2, "name": "Bob Williams",  "enrolled_course_ids": [102] },
+    { "id": 3, "name": "Cara Singh",    "enrolled_course_ids": [] }
+  ],
+  "teachers": [
+    { "id": 1, "name": "Mr. Taylor", "speciality": "Piano" },
+    { "id": 2, "name": "Ms. Chen",   "speciality": "Guitar" },
+    { "id": 3, "name": "Dr. Ahmed",  "speciality": "Theory" }
+  ],
+  "courses": [
+    {
+      "id": 101,
+      "name": "Piano 101",
+      "instrument": "Piano",
+      "teacher_id": 1,
+      "enrolled_student_ids": [1],
+      "lessons": [
+        { "lesson_id": 1, "day": "Monday",    "start_time": "16:00", "room": "Room A" },
+        { "lesson_id": 2, "day": "Wednesday", "start_time": "16:00", "room": "Room A" }
+      ]
+    },
+    {
+      "id": 102,
+      "name": "Guitar Basics",
+      "instrument": "Guitar",
+      "teacher_id": 2,
+      "enrolled_student_ids": [2],
+      "lessons": [
+        { "lesson_id": 3, "day": "Monday", "start_time": "17:00", "room": "Room B" }
+      ]
+    },
+    {
+      "id": 103,
+      "name": "Theory 1",
+      "instrument": "Theory",
+      "teacher_id": 3,
+      "enrolled_student_ids": [1],
+      "lessons": [
+        { "lesson_id": 4, "day": "Friday", "start_time": "15:00", "room": "Room C" }
+      ]
+    }
+  ],
+  "attendance": [],
+  "next_student_id": 4,
+  "next_teacher_id": 4,
+  "next_course_id": 104
 }
