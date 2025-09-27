@@ -7,3 +7,4 @@
 .vscode/
 .Misc/
 *.ipynb
+data/msms.json
