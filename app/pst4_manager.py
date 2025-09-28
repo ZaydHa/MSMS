@@ -6,6 +6,7 @@ from typing import Optional, Tuple, List
 
 DATA_FILE = Path("data/msms.json")
 
+
 class Student:
     def __init__(self, _id: int, name: str):
         self.id = _id
@@ -18,6 +19,7 @@ class Student:
             "name": self.name,
             "enrolled_course_ids": self.enrolled_course_ids,
         }
+
 
 class Course:
     def __init__(self, _id: int, name: str, instrument: str, teacher_id: int):
@@ -39,6 +41,7 @@ class Course:
             "lessons": self.lessons,
         }
 
+
 class Teacher:
     def __init__(self, _id: int, name: str, speciality: str):
         self.id = _id
@@ -47,6 +50,7 @@ class Teacher:
 
     def to_dict(self):
         return {"id": self.id, "name": self.name, "speciality": self.speciality}
+
 
 class ScheduleManager:
     """
@@ -64,19 +68,49 @@ class ScheduleManager:
     # ------------- persistence -------------
     def _load_or_seed(self):
         if not self.data_path.exists():
-            # seed demo data
-            self.students = [Student(1, "Ava Wong"), Student(2, "Ben Lee")]
-            self.teachers = [Teacher(1, "Ms Smith", "Piano"), Teacher(2, "Mr Khan", "Guitar")]
-            self.courses  = [Course(1, "Beginner Piano A", "Piano", 1),
-                             Course(2, "Guitar Jam 101", "Guitar", 2)]
+            # --- Custom demo seed (students / teachers / courses / lessons) ---
+            self.students = [
+                Student(1, "Alice Johnson"),
+                Student(2, "Liam Patel"),
+                Student(3, "Maya Singh"),
+            ]
+
+            self.teachers = [
+                Teacher(1, "Mr. Taylor", "Piano"),
+                Teacher(2, "Ms. Chen", "Guitar"),
+                Teacher(3, "Dr. Rossi", "Violin"),
+            ]
+
+            self.courses = [
+                # id, name, instrument, teacher_id
+                Course(101, "Piano 101", "Piano", 1),
+                Course(102, "Guitar Basics", "Guitar", 2),
+                Course(201, "Violin Ensemble", "Violin", 3),
+            ]
+
+            # lessons for each course (shown on Daily Roster page)
             self.courses[0].lessons = [
                 {"day": "Monday", "time": "16:00"},
                 {"day": "Wednesday", "time": "17:00"},
             ]
-            self.courses[1].lessons = [{"day": "Tuesday", "time": "15:30"}]
+            self.courses[1].lessons = [
+                {"day": "Monday", "time": "16:30"},
+                {"day": "Tuesday", "time": "15:30"},
+            ]
+            self.courses[2].lessons = [
+                {"day": "Thursday", "time": "18:00"},
+            ]
+
+            # example enrolments (optional)
+            self.courses[0].enrolled_student_ids = [1]  # Alice in Piano 101
+            self.courses[1].enrolled_student_ids = [2]  # Liam in Guitar Basics
+            self.students[0].enrolled_course_ids = [101]
+            self.students[1].enrolled_course_ids = [102]
+
             self._save()
             return
 
+        # load existing JSON
         data = json.loads(self.data_path.read_text())
         self.students = []
         for s in data.get("students", []):
@@ -84,8 +118,10 @@ class ScheduleManager:
             st.enrolled_course_ids = s.get("enrolled_course_ids", [])
             self.students.append(st)
 
-        self.teachers = [Teacher(int(t["id"]), t["name"], t.get("speciality", ""))
-                         for t in data.get("teachers", [])]
+        self.teachers = [
+            Teacher(int(t["id"]), t["name"], t.get("speciality", ""))
+            for t in data.get("teachers", [])
+        ]
 
         self.courses = []
         for c in data.get("courses", []):
@@ -104,7 +140,7 @@ class ScheduleManager:
 
     # ------------- helpers -------------
     def _next_student_id(self) -> int:
-        return (max((s.id for s in self.students), default=0) + 1)
+        return max((s.id for s in self.students), default=0) + 1
 
     def _get_student_by_id(self, sid: int) -> Optional[Student]:
         return next((s for s in self.students if s.id == sid), None)
@@ -163,3 +199,9 @@ class ScheduleManager:
                         "Course ID": c.id,
                     })
         return rows
+
+    def reset_demo_data(self):
+        """Delete JSON and re-seed with the built-in demo data."""
+        if self.data_path.exists():
+            self.data_path.unlink()
+        self._load_or_seed()
