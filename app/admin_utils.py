@@ -1,40 +1,38 @@
-# app/admin_utils.py
 import logging
+from logging.handlers import RotatingFileHandler
+from datetime import datetime
+from pathlib import Path
 import shutil
-import datetime
-import os
 
-def init_logger(log_file="msms.log"):
-    """Configures the root logger to write to a file."""
-    # TODO: Configure basic logging. Set the level to INFO.
-    # Set the format to include a timestamp, level name, and message.
-    # Set the output file (handler).
-    logging.basicConfig(
-        level=logging.INFO,
-        format='%(asctime)s - %(levelname)s - %(message)s',
-        filename=log_file,
-        filemode='a' # Append to the log file
-    )
-    print(f"Logging configured. Outputting to {log_file}")
+def init_logger(log_file: str = "msms.log") -> None:
+    """Initialize application-wide logging (idempotent)."""
+    root = logging.getLogger()
+    if root.handlers:
+        return
+    root.setLevel(logging.INFO)
+    fmt = logging.Formatter("%(asctime)s | %(levelname)s | %(message)s")
 
-def backup_data(data_path="data/msms.json", backup_dir="data/backups"):
-    """Creates a timestamped backup of the main data file."""
-    # TODO: Check if the backup directory exists, and create it if it doesn't.
-    if not os.path.exists(backup_dir):
-        os.makedirs(backup_dir)
-    
-    # TODO: Create a timestamp string (e.g., YYYY-MM-DD_HH-MM-SS).
-    timestamp = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-    backup_filename = f"msms_backup_{timestamp}.json"
-    backup_filepath = os.path.join(backup_dir, backup_filename)
-    
-    try:
-        # TODO: Use shutil.copy() to copy the data_path to the backup_filepath.
-        shutil.copy(data_path, backup_filepath)
-        # Use the logging module to record this event.
-        logging.info(f"Data successfully backed up to {backup_filepath}")
-        return True
-    except Exception as e:
-        # Log any errors that occur during the backup process.
-        logging.error(f"Failed to create backup: {e}")
-        return False
+    ch = logging.StreamHandler()
+    ch.setLevel(logging.INFO)
+    ch.setFormatter(fmt)
+
+    fh = RotatingFileHandler(log_file, maxBytes=1_000_000, backupCount=3, encoding="utf-8")
+    fh.setLevel(logging.INFO)
+    fh.setFormatter(fmt)
+
+    root.addHandler(ch)
+    root.addHandler(fh)
+    logging.info("Logger initialized.")
+
+def backup_data(data_path: str = "msms.json", backup_dir: str = "backups") -> str:
+    """Copy data file to a timestamped backup in backup_dir; returns backup path or ''."""
+    src = Path(data_path)
+    Path(backup_dir).mkdir(parents=True, exist_ok=True)
+    ts = datetime.now().strftime("%Y%m%d_%H%M%S")
+    dst = Path(backup_dir) / f"{src.stem}_{ts}{src.suffix}"
+    if src.exists():
+        shutil.copy2(src, dst)
+        logging.info(f"Data backup created: {dst}")
+        return str(dst)
+    logging.warning(f"No data file to back up at {src.resolve()}")
+    return ""
