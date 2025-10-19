@@ -1,10 +1,5 @@
-# Ignore system and app files
-*.DS_Store
-*.zip
-*.app
-*.pdf
-*.png
-.vscode/
-.Misc/
-*.ipynb
-data/msms.json
+__pycache__/
+*.log
+*.csv
+backups/
+
