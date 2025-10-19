@@ -1,6 +1,6 @@
 import streamlit as st
 from app.schedule import ScheduleManager
-from gui.student_pages import show_student_management_page
+from gui.student_pages import show_student_page
 from gui.roster_pages import show_roster_page
 from gui.finance_pages import show_finance_page  # <-- add import
 
@@ -14,7 +14,8 @@ def launch():
     page = st.sidebar.radio("Go to", ["Student Management", "Daily Roster", "Payments"])
 
     if page == "Student Management":
-        show_student_management_page(st.session_state.manager)
+        show_student_page(st.session_state.manager)
+
     elif page == "Daily Roster":
         show_roster_page(st.session_state.manager)
     elif page == "Payments":

@@ -1,38 +1,42 @@
-# gui/roster_pages.py
 import streamlit as st
-import pandas as pd
 
 def show_roster_page(manager):
-    """Renders the daily roster and check-in functionality."""
-    st.header("Daily Roster")
+    st.header("Daily Roster / Check-in")
 
-    # --- View Roster Section (remains the same) ---
-    day = st.selectbox("Select a day", ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"])
-    # ... (code to display the dataframe) ...
-    
-    # --- Student Check-in Section (now works correctly) ---
-    st.subheader("Student Check-in")
-    with st.form("check_in_form"):
-        # To make this user-friendly, we should populate the dropdowns dynamically.
-        # Get lists of student names and course names from the manager.
-        student_list = {s.name: s.id for s in manager.students}
-        course_list = {c.name: c.id for c in manager.courses}
-        
-        selected_student_name = st.selectbox("Select Student", student_list.keys())
-        selected_course_name = st.selectbox("Select Course", course_list.keys())
-        
-        submitted = st.form_submit_button("Check-in Student")
+    if not manager.students or not manager.courses:
+        st.info("You need at least one student and one course.")
+        return
 
-        if submitted:
-            # Convert the selected names back to IDs
-            student_id = student_list[selected_student_name]
-            course_id = course_list[selected_course_name]
+    # --- FIXED: use 'name' instead of 'title'
+    student_map = {f'{s.get("name", "Unnamed")} (id {s.get("id", "?")})': s.get("id") for s in manager.students}
+    course_map = {
+    f"{c.get('name', 'Untitled Course')} (id {c.get('id', '?')})": c.get('id')
+    for c in manager.courses
+}
 
-            # This call now works because we implemented the method in PST3.
-            success = manager.check_in(student_id, course_id)
+    col1, col2, col3 = st.columns([4, 4, 1])
+    with col1:
+        ssel = st.selectbox("Student", list(student_map.keys()), key="roster_s")
+    with col2:
+        csel = st.selectbox("Course", list(course_map.keys()), key="roster_c")
+    with col3:
+        if st.button("Check-in"):
+            sid = student_map[ssel]
+            cid = course_map[csel]
+            student = next((x for x in manager.students if x["id"] == sid), None)
+            if not student:
+                st.error("Student not found.")
+                return
+            if cid not in student.get("enrolled_course_ids", []):
+                st.warning("This student is not enrolled in that course.")
+                return
+            ok = manager.check_in(sid, cid)
+            st.success("Checked in!") if ok else st.error("Check-in failed.")
 
-            if success:
-                st.success(f"Checked in {selected_student_name} for {selected_course_name}!")
-            else:
-                # The manager's print statements will go to the console, but we can add a GUI error too.
-                st.error("Check-in failed. See console for details. (Is the student enrolled in that course?)")
+    st.divider()
+    st.subheader("Recent Attendance")
+    if manager.attendance:
+        rows = manager.attendance[-20:][::-1]
+        st.table(rows)
+    else:
+        st.caption("No attendance yet.")

@@ -1,27 +1,44 @@
-# gui/student_pages.py
 import streamlit as st
 
-def show_student_management_page(manager):
-    """Renders all components for the student management page."""
+def show_student_page(manager):
     st.header("Student Management")
 
-    # --- Section 1: Search for a Student ---
     st.subheader("Find a Student")
-    search_term = st.text_input("Search by Name or ID")
-    if search_term:
-        # Call a find method on your manager and display results.
-        # results = manager.find_students(search_term)
-        # st.dataframe(results)
-        pass
+    query = st.text_input("Search by Name or ID", placeholder="Type a name or student ID")
+    if query:
+        matches = [
+            s for s in manager.students
+            if query.lower() in s["name"].lower() or query == str(s["id"])
+        ]
+        if matches:
+            st.table(matches)
+        else:
+            st.warning("No students found.")
 
-    # --- Section 2: Register a New Student ---
+    st.divider()
+
+    # ↓↓↓ YOUR UPDATED REGISTRATION CODE GOES HERE ↓↓↓
     st.subheader("Register a New Student")
-    with st.form("registration_form"):
-        reg_name = st.text_input("New Student Name")
-        reg_instrument = st.text_input("First Instrument")
-        submitted = st.form_submit_button("Register Student")
-        
-        if submitted:
-            # Call the manager's method to perform the registration.
-            # manager.register_new_student(reg_name, reg_instrument)
-            st.success(f"Successfully registered {reg_name}!")
+
+    name = st.text_input("New Student Name")
+    instrument = st.text_input("First Instrument")
+
+    # Course dropdown
+    if manager.courses:
+        course_choices = {c["name"]: c["id"] for c in manager.courses}
+        course_selected = st.selectbox("Assign to Course", list(course_choices.keys()))
+    else:
+        st.warning("No courses found. Please add one first.")
+        course_selected = None
+
+    if st.button("Register Student"):
+        if not name:
+            st.error("Please enter a student name.")
+        elif not course_selected:
+            st.error("Please select a course.")
+        else:
+            s = manager.add_student(name, f"{name.lower().replace(' ', '.')}@example.com")
+            course_id = course_choices[course_selected]
+            s["enrolled_course_ids"].append(course_id)
+            manager._save_data()
+            st.success(f"Registered {s['name']} and enrolled in {course_selected}")
